@@ -3,7 +3,7 @@ from constants import SUITS, RANKS
 
 cardValues = {r: min(10, i+1) if r!= 'A' else 11 for i, r in enumerate(RANKS)}
 
-fullDeck= [(s, r) for s in SUITS for r in RANKS]
+fullDeck= [(r, s) for s in SUITS for r in RANKS]
 
 class InfiniteDeck:
     #Every card draw is equally likely whether it has been drawn all ready
