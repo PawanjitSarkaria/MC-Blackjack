@@ -13,7 +13,7 @@ def fontSet(size, bold= False):
 
 def textMake(surf, txt, x, y, size=16, color= WHITE, bold= False, anchor= "left"):
     f= fontSet(size, bold)
-    t= f.render(str((txt), True, color))
+    t= f.render(str(txt), True, color)
     if anchor == "center":
         r= t.get_rect(center=(x,y))
     elif anchor == "right":
@@ -29,7 +29,7 @@ def buttonMake(surf, rect, label, color, hoverColor, mouse, txtColor= WHITE, siz
     if selected:
         pygame.draw.rect(surf, GOLD, (rect[0]-2, rect[1]-2, rect[2]+4, rect[3]+4), border_radius= radius)
     pygame.draw.rect(surf, c, rect, border_radius= radius)
-    pygame.draw.rect(surf, (255, 255, 255, 80), rect, rect, 1, border_radius= radius)
+    pygame.draw.rect(surf, (255, 255, 255, 80), rect, 1, border_radius= radius)
     textMake(surf, label, rect[0]+rect[2]//2, rect[1]+rect[3]//2, size, txtColor, bold, anchor= "center")
     return hovering
 
@@ -141,7 +141,7 @@ class Menu:
             self.balanceActive= True
             return None
         
-        if self.closeButton and self.closeButton.collideointe(pos):
+        if self.closeButton and self.closeButton.collidepoint(pos):
             try:
                 bal = int(self.balanceInput)
                 self.balanceStart= max(10, min(bal,1000000))

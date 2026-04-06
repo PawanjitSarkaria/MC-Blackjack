@@ -116,7 +116,7 @@ def get_card_surf(rank, suit):
 
 
 def build_back(w=None, h=None):
-    global _back_surf
+    global backSide
     w = w or CARD_WIDTH
     h = h or CARD_HEIGHT
     key = (w, h)

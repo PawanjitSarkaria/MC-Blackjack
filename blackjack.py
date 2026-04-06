@@ -36,7 +36,7 @@ def main():
     init_sprites()
 
     table_surf = TableBuild(SCREEN_WIDTH, SCREEN_HEIGHT)
-    animationQueue   = animationQueue()
+    animator = Animator()
     hud        = HUD()
     menu       = Menu()
 
@@ -63,7 +63,7 @@ def main():
             return
         speed = hud.current_speed()
         events, result, delta, bet = pipeline.get_next_game()
-        animationQueue.load_game(events, speed=speed)
+        animator.load_game(events, speed=speed)
         pipeline.balance = hud.balance
         _next_game_at = 0
         _pending = (result, delta)
@@ -84,31 +84,31 @@ def main():
 
             elif event.type == pygame.KEYDOWN:
                 hud.handle_key(event)
-                menu.handle_key(event)
+                menu.keyChecker(event)
                 if event.key == pygame.K_SPACE:
                     if state == STATE_RUNNING:
                         state = STATE_PAUSED
-                        animationQueue.pause()
+                        animator.pause()
                     elif state in (STATE_IDLE, STATE_PAUSED):
                         if state == STATE_IDLE:
                             start_pipeline()
                             load_next_game()
                         state = STATE_RUNNING
-                        animationQueue.resume()
+                        animator.resume()
                 elif event.key == pygame.K_ESCAPE:
                     if state == STATE_MENU:
-                        state = STATE_PAUSED if animationQueue.player_cards else STATE_IDLE
+                        state = STATE_PAUSED if animator.player_cards else STATE_IDLE
                         menu.visible = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if menu.visible:
-                    result = menu.handle_click(event.pos)
-                    if result:
-                        hud.policy_idx    = result["policy_idx"]
-                        hud.infinite_deck = result["infinite_deck"]
-                        if result["restart"] or result["balance"] != hud.balance:
-                            hud.reset(result["balance"])
-                            animationQueue.reset()
+                    menu_result = menu.clicker(event.pos)
+                    if menu_result:
+                        hud.policy_idx    = menu_result["policyID"]
+                        hud.infinite_deck = menu_result["infiniteDeck"]
+                        if menu_result["restart"] or menu_result["balance"] != hud.balance:
+                            hud.reset(menu_result["balance"])
+                            animator.reset()
                             if pipeline:
                                 pipeline.stop()
                             pipeline = None
@@ -120,21 +120,21 @@ def main():
                                     hud.infinite_deck,
                                     hud.balance,
                                 )
-                            state = STATE_PAUSED if animationQueue.player_cards else STATE_IDLE
+                            state = STATE_PAUSED if animator.player_cards else STATE_IDLE
                         menu.visible = False
                 else:
                     action = hud.handle_click(event.pos, state == STATE_RUNNING)
                     if action == "toggle_play":
                         if state == STATE_RUNNING:
                             state = STATE_PAUSED
-                            animationQueue.pause()
+                            animator.pause()
                         elif state == STATE_IDLE:
                             start_pipeline()
                             load_next_game()
                             state = STATE_RUNNING
                         elif state == STATE_PAUSED:
                             state = STATE_RUNNING
-                            animationQueue.resume()
+                            animator.resume()
                     elif action == "open_menu":
                         menu.open(hud.balance, hud.policy_idx, hud.infinite_deck)
                         menu.visible = True
@@ -146,9 +146,9 @@ def main():
 
         # ── Update ────────────────────────────────────────────────────────────
         if state == STATE_RUNNING:
-            animationQueue.update()
+            animator.update()
 
-            if animationQueue.is_done():
+            if animator.is_done():
                 # Record result from the game that just finished
                 if _pending:
                     result_str, delta = _pending
@@ -169,18 +169,18 @@ def main():
 
         # ── Draw ──────────────────────────────────────────────────────────────
         drawTable(screen, table_surf)
-        animationQueue.draw(screen)
+        animator.draw(screen)
 
         # Hand value overlays
-        pv = hand_total(animationQueue.player_cards) if animationQueue.player_cards else None
-        dv = hand_total(animationQueue.dealer_cards) if animationQueue.dealer_cards else None
-        dealer_hidden = any(not c.face_up for c in animationQueue.dealer_cards)
+        pv = hand_total(animator.player_cards) if animator.player_cards else None
+        dv = hand_total(animator.dealer_cards) if animator.dealer_cards else None
+        dealer_hidden = any(not c.face_up for c in animator.dealer_cards)
         hud.draw_hand_values(screen, pv, dv, dealer_hidden)
 
         hud.draw(screen, state == STATE_RUNNING, mouse_pos)
 
         # Resolve flash overlay
-        ri = animationQueue.get_resolve_info()
+        ri = animator.get_resolve_info()
         if ri:
             result_s, flash_col, alpha = ri
             label_map = {"win": "WIN", "blackjack": "BLACKJACK!", "lose": "LOSE", "push": "PUSH"}
@@ -192,7 +192,7 @@ def main():
             screen.blit(t, r)
 
         # Idle title screen
-        if state == STATE_IDLE and not animationQueue.player_cards:
+        if state == STATE_IDLE and not animator.player_cards:
             title_s = font_title.render(TITLE, True, GOLD)
             tr = title_s.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 - 60))
             screen.blit(title_s, tr)

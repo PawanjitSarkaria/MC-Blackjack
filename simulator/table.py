@@ -6,11 +6,11 @@ background = None
 
 def drawOval(surf, color, cx, cy, W, H, width=2):
     rect = pygame.Rect(cx - W, cy - H, 2*W, 2*H)
-    pygame.draw.elipse(surf, color, rect, width)
+    pygame.draw.ellipse(surf, color, rect, width)
 
 def TableBuild(w, h):
     global background
-    surf = pygame.Surface(w, h)
+    surf = pygame.Surface((w, h))
 
     #MAIN BACKGROUND
     surf.fill(FELT)
@@ -32,7 +32,7 @@ def TableBuild(w, h):
     surf.blit(t2,(CARD_START, PLAYER-28))
 
     #center divider and circle
-    pygame.draw.line(surf, LINING, (60, h//2), (w//60, h//2 +10), 1)
+    pygame.draw.line(surf, LINING, (60, h//2), (w-60, h//2 +10), 1)
     drawOval(surf, LINING, w//2, h//2+10, 60, 40, 2)
 
     background= surf
