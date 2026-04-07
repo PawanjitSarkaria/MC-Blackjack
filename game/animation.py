@@ -33,16 +33,16 @@ def runGame(deck, policyID, balance, bet):
     d_hand = []
 
     c= deck.draw(); p_hand.append(c)
-    events.append({"type": dealPlayer, "card": c, "faceUP": True})
+    events.append({"type": dealPlayer, "card": c, "face_up": True})
 
     c= deck.draw(); d_hand.append(c)
-    events.append({"type": dealDealer, "card": c, "faceUP": True})
+    events.append({"type": dealDealer, "card": c, "face_up": True})
 
     c= deck.draw(); p_hand.append(c)
-    events.append({"type": dealPlayer, "card": c, "faceUP": True})
+    events.append({"type": dealPlayer, "card": c, "face_up": True})
 
     c= deck.draw(); d_hand.append(c)
-    events.append({"type": dealDealer, "card": c, "faceUP": False}) #dealers hidden card
+    events.append({"type": dealDealer, "card": c, "face_up": False}) #dealers hidden card
 
     #check if player has blackjack
     if isBlackJack(p_hand):
@@ -59,7 +59,7 @@ def runGame(deck, policyID, balance, bet):
     #policy true= stick, false= hit
     while not policy(p_hand) and not isBust(p_hand):
         c= deck.draw(); p_hand.append(c)
-        events.append({"type": playerHit, "card": c, "faceUp": True})
+        events.append({"type": playerHit, "card": c, "face_up": True})
 
     #revel dealer card
     events.append({"type": dealerFlip, "card": d_hand[1]})
@@ -69,9 +69,9 @@ def runGame(deck, policyID, balance, bet):
         return events, "lose", -bet
     
     #dealer turn
-    while dealerPolicy(d_hand):
+    while not dealerPolicy(d_hand):
         c= deck.draw(); d_hand.append(c)
-        events.append({"type": dealerHit, "card": c, "faceUp": True})
+        events.append({"type": dealerHit, "card": c, "face_up": True})
 
     #resolve
     pv = handValue(p_hand)

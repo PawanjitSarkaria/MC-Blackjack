@@ -57,4 +57,4 @@ CARD_START = 260
 #speed
 SPEED_OPTIONS = [1, 2, 5, 10]
 
-POLICIES = [ "Policy 1 — Stick ≥ 17", "Policy 2 — Stick ≥ 17 hard", "Policy 3 — Always stick", "Policy 4 — Mimic dealer", "Policy 5 — Stick ≥ 15"]
+POLICIES = [ "Policy 1 — Stick ≥ 17", "Policy 2 — Stick ≥ 17 hard", "Policy 3 — Always stick"]
