@@ -1,7 +1,7 @@
 ## Setup
 
 ```bash
-pip install pygame
-cd MC:BLACKJACK
+create venv and pip install pygame
+cd ~/path/to/MC-Blackjack
 python blackjack.py
 ```
